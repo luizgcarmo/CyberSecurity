@@ -5,7 +5,7 @@ Este repositório documenta minha evolução técnica, laboratórios práticos e
 ---
 
 ## 🎯 Objetivo Profissional
-Consolidar habilidades técnicas práticas para atuação como **Analista de Segurança da Informação / SOC N1 Júnior**, aplicando metodologias de análise de artefatos, triagem de incidentes, perícia digital e compreensão de vetores de ataque.
+Consolidar habilidades técnicas práticas para atuação como **Analista de Segurança da Informação Júnior**, aplicando metodologias de análise de artefatos, triagem de incidentes, perícia digital e compreensão de vetores de ataque.
 
 ---
 
