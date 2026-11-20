@@ -1,85 +1,114 @@
-# 🛡️ Portfólio de Estudos e Práticas em Cibersegurança
+🛡️ Cybersecurity Studies & Hands-on Portfolio
 
-Este repositório documenta minha evolução técnica, laboratórios práticos e resoluções de desafios de **Capture The Flag (CTF)**, com foco em fundamentos de análise de segurança, investigação forense, engenharia reversa e exploração de vulnerabilidades.
+This repository documents my technical progression, hands-on labs, and Capture The Flag (CTF) challenge write-ups, focusing on security analysis fundamentals, digital forensics, reverse engineering, and vulnerability exploitation.
 
----
+🎯 Career Objective
 
-## 🎯 Objetivo Profissional
-Consolidar habilidades técnicas práticas para atuação como **Analista de Segurança da Informação Júnior**, aplicando metodologias de análise de artefatos, triagem de incidentes, perícia digital e compreensão de vetores de ataque.
+Consolidate practical technical skills to work as a Junior SOC Analyst / Tier 1 Information Security Analyst, applying artifact analysis methodologies, incident triage, digital forensics, and a solid understanding of attack vectors.
 
----
+📚 Study Areas & Technical Skills
 
-## 📚 Áreas de Estudo e Habilidades Técnicas
+1. Digital Forensics (DFIR) & Disk Analysis
 
-### 1. Forense Digital (DFIR) e Análise de Disco
-Investigação de imagens de disco, recuperação de evidências e análise de sistemas de arquivos para reconstrução de eventos.
-* **The Sleuth Kit (TSK) & Autopsy:** Análise em nível de volume e sistema de arquivos (`mmls`, `fls`, `icat`, `tsk_recover`, `blkls`, `mactime`) para localização de arquivos ocultos, histórico de comandos (`.bash_history`) e recuperação de arquivos deletados em imagens `.img`.
-* **Aquisição e Carving:** Conceitos de preservação de evidências, análise de espaço não alocado (*unallocated space*) e recuperação por assinatura de cabeçalho com `binwalk` e `dd`.
-* **Análise de Estruturas de Boot:** Inspeção de sistemas embarcados/mínimos (*initramfs* e Alpine Linux).
+Investigation of disk images, evidence recovery, and file system analysis for event reconstruction.
 
-### 2. Forense de Imagens e Esteganografia
-Inspeção de arquivos multimídia para detecção de adulterações e extração de dados ocultos.
-* **Análise de Metadados:** Extração e leitura de tags EXIF e campos personalizados com `exiftool`.
-* **Análise Binária e Hexadecimal:** Inspeção de *magic bytes*, cabeçalhos de arquivos (ex: assinaturas `MZ` e `PE`), extração de strings legíveis (`strings`) e leitura de dumps hexadecimais (`xxd`, `hexdump`).
-* **Esteganografia:** Detecção de dados embutidos e análise de planos de bits/cores utilizando `binwalk`, `steghide`, `stegsolve` e `zsteg`.
+The Sleuth Kit (TSK) & Autopsy: Volume and file system level analysis (mmls, fls, icat, tsk_recover, blkls, mactime) to locate hidden files, command history (.bash_history), and recover deleted files from .img disk images.
 
-### 3. Segurança Web e Inspeção de Protocolos
-* **Análise de Sessão e Armazenamento:** Inspeção e manipulação de *Cookies* e armazenamento local via ferramentas de desenvolvedor (DevTools) para identificação de tokens e dados sensíveis expostos.
-* **Codificação e Criptografia Básica:** Identificação e decodificação de strings em Base64, conversão Hexadecimal/Decimal e compreensão de criptografia simétrica com tokens **Fernet** (chaves de 32 bytes em Base64).
+Acquisition & Carving: Evidence preservation concepts, unallocated space analysis, and header signature file carving using binwalk and dd.
 
-### 4. Análise de Binários, Engenharia Reversa e Exploração (Pwn)
-Compreensão de baixo nível sobre como falhas de memória ocorrem (essencial para entender regras de detecção e assinaturas de exploits).
-* **Análise Estática e Dinâmica:** Desmontagem de binários x86-64 com `objdump` (análise de instruções assembly como `xor`, `cmp`, `je`/`jne`) e depuração em tempo real com **GDB** (mapeamento de memória com `info proc map`, inspeção de registradores e funções).
-* **Mitigações de Binários:** Identificação de proteções de compilação (ASLR, PIE, Stack Canary, NX, Full RELRO).
-* **Exploração de Format String:** Identificação de vazamento de memória da stack (`%p`), cálculo de *offset* dinâmico, bypass de PIE (*Position Independent Executable*) e escrita arbitrária na memória (`%hhn`).
-* **Automação com Python (`pwntools`):** Desenvolvimento de scripts para interação com serviços remotos, empacotamento de endereços em 64-bit (`p64`) e automação de payloads.
+Boot Structure Analysis: Inspection of embedded and minimal Linux file systems (initramfs and Alpine Linux).
 
-### 5. Fundamentos de Red Team & Detecção (Blue Team)
-* **Arquitetura C2 (Command & Control):** Estudo teórico do funcionamento de frameworks C2 (como *Sliver C2*), comunicação cliente-servidor (*listeners* HTTP/HTTPS/mTLS, *beacons* e *sessions*) e indicadores de comprometimento (IoCs) gerados no tráfego de rede e processos.
+2. Image Forensics & Steganography
 
----
-# 🐧 Administração, Troubleshooting e Uso Avançado de Linux
+Inspection of multimedia files to detect tampering and extract hidden data.
 
-Este documento reúne os conhecimentos práticos adquiridos no uso diário e na administração do ambiente **BlackArch / Arch Linux**, com foco em linha de comando (CLI), automação via Bash, gerenciamento de pacotes e manipulação de sistemas de arquivos.
+Metadata Analysis: Extraction and reading of EXIF tags and custom fields using exiftool.
 
----
+Binary & Hexadecimal Analysis: Inspection of magic bytes and file headers (e.g., MZ and PE signatures), extraction of readable strings (strings), and analysis of hex dumps (xxd, hexdump).
 
-## 💻 Ambiente Principal
-* **Distribuição:** BlackArch Linux (baseado em Arch Linux)
-* **Shell:** Bash (GNU Bourne-Again SHell)
-* **Foco:** Segurança Ofensiva/Defensiva, Forense Digital e Automação de Terminal
+Steganography: Detection of embedded data and bit/color plane analysis using binwalk, steghide, stegsolve, and zsteg.
 
----
+3. Web Security & Protocol Inspection
 
-## ⚙️ Competências Técnicas em Linux
+Session & Storage Analysis: Inspection and manipulation of Cookies and browser local storage via Developer Tools (DevTools) to identify exposed tokens and sensitive data.
 
-### 1. Manipulação Avançada de Arquivos e Busca (CLI)
-Domínio de utilitários nativos do Linux para triagem rápida de grandes volumes de arquivos e logs:
-* **Busca Recursiva e Filtragem:** Uso combinado de `find`, `grep` (flags `-r`, `-n`, `-i`, `-C`, `-E`) para localizar padrões específicos em diretórios complexos e arquivos compactados (`unzip -l`).
-* **Inspeção de Arquivos e Binários:** Identificação de tipos de arquivo independentemente da extensão (`file`), leitura paginada (`less`), visualização de conteúdo (`cat`), comparação byte a byte (`cmp -l`) e manipulação de blocos (`dd`).
-* **Codificação via Terminal:** Conversão e decodificação rápida de fluxos de dados utilizando `base64 -d`, `xxd` e `hexdump -C`.
+Encoding & Basic Cryptography: Identification and decoding of Base64 strings, Hexadecimal/Decimal conversions, and understanding symmetric encryption using Fernet tokens (32-byte Base64-encoded keys).
 
-### 2. Gerenciamento de Sistemas de Arquivos e Dispositivos
-* **Montagem e Dispositivos de Loop:** Criação manual e montagem de imagens de disco em modo somente leitura (`mount -o loop,ro,offset=...`, `losetup`) para análise segura sem alteração de integridade.
-* **Diagnóstico de Partições:** Cálculo de *offsets* de setores e identificação de estruturas de sistemas de arquivos (`ext2/3/4`, `FAT`, `NTFS`).
+4. Binary Analysis, Reverse Engineering & Exploitation (Pwn)
 
-### 3. Shell Scripting e Automação no `.bashrc`
-Desenvolvimento de rotinas personalizadas para aumento de produtividade e monitoramento de tarefas no terminal:
-* **Automação de Notificações:** Criação de funções e *aliases* personalizados no `~/.bashrc` integrando notificações visuais (`notify-send`) e alertas sonoros (`paplay` / `ffmpeg`) para conclusão de comandos de longa duração.
-* **Gerenciamento de Processos e Subshells:** Execução de tarefas em segundo plano (`&`), controle de jobs e supressão de ruídos de saída de subshells.
-* **Autostart de Ambiente Gráfico:** Configuração de arquivos `.desktop` em `~/.config/autostart/` para inicialização automática de serviços e scripts de sessão no XFCE.
+Low-level understanding of how memory corruption flaws occur (essential for understanding detection rules and exploit signatures).
 
-### 4. Administração de Pacotes e Resolução de Conflitos (Arch/BlackArch)
-* **Gerenciamento com `pacman` e AUR (`yay`):** Instalação, atualização de sistema (`pacman -Syu`) e compilação de pacotes comunitários.
-* **Troubleshooting de Dependências:** Diagnóstico e resolução de conflitos de bibliotecas compartilhadas (ex: conflitos entre `libjpeg` e `libjpeg-turbo` em ferramentas como `steghide`).
-* **Gestão de Ambientes Java (JVM):** Configuração de múltiplas versões do OpenJDK (`/usr/lib/jvm/`) e resolução de incompatibilidades de módulos (como `JavaFX` e *Security Manager*) para execução de ferramentas forenses legadas como o Autopsy.
+Static & Dynamic Analysis: Disassembly of x86-64 binaries using objdump (analyzing assembly instructions such as xor, cmp, je/jne) and real-time debugging with GDB (memory mapping via info proc map, inspecting registers and functions).
 
-### 5. Diagnóstico de Hardware e Sistema
-* **Inventário e Monitoramento:** Verificação de arquitetura e especificações de processador (`lscpu`, `/proc/cpuinfo`, `inxi -C`, `lshw`) e acompanhamento de recursos e processos em tempo real (`htop`, `watch`).
-* **Servidor de Áudio e GUI:** Diagnóstico de subsistemas de áudio (ALSA vs. PipeWire/PulseAudio) e gerenciamento/redefinição de ambientes gráficos (XFCE, GNOME, KDE).
+Binary Mitigations: Identification of compiler protections (ASLR, PIE, Stack Canary, NX, Full RELRO).
 
-## 🛠️ Ferramentas Utilizadas nos Laboratórios
-* **Forense & Carving:** Autopsy, The Sleuth Kit (TSK), ExifTool, Binwalk, Steghide, Stegsolve, Zsteg.
-* **Debugging & Disassembly:** GDB, Objdump, xxd, Hexdump, Strings.
-* **Desenvolvimento & Automação:** Python 3, Pwntools, Regex/Grep.
-* **Plataformas de Treinamento:** picoCTF, CyLab Academy, ambientes CTF locais.
+Format String Exploitation: Identification of stack memory leaks (%p), dynamic offset calculation, PIE (Position Independent Executable) bypass, and arbitrary memory write (%hhn).
+
+Automation with Python (pwntools): Scripting interactions with remote services, 64-bit address packing (p64), and payload automation.
+
+5. Red Team & Detection Fundamentals (Blue Team)
+
+C2 (Command & Control) Architecture: Theoretical study of C2 frameworks (such as Sliver C2), client-server communication (HTTP/HTTPS/mTLS listeners, beacons, and sessions), and Indicators of Compromise (IoCs) generated in network traffic and host processes.
+
+🛠️ Lab Tools & Technologies
+
+Forensics & Carving: Autopsy, The Sleuth Kit (TSK), ExifTool, Binwalk, Steghide, Stegsolve, Zsteg.
+
+Debugging & Disassembly: GDB, Objdump, xxd, Hexdump, Strings.
+
+Development & Automation: Python 3, Pwntools, Regex/Grep.
+
+Training Platforms: picoCTF, CyLab Academy, local CTF environments.
+🐧 Linux Administration, Troubleshooting & Advanced CLI Usage
+
+This document compiles the practical knowledge acquired through daily usage and administration of a BlackArch / Arch Linux environment, focusing on command-line interface (CLI) mastery, Bash automation, package management, and file system manipulation.
+
+💻 Primary Environment
+
+Distribution: BlackArch Linux (Arch Linux-based)
+
+Shell: Bash (GNU Bourne-Again SHell)
+
+Focus: Offensive/Defensive Security, Digital Forensics, and Terminal Automation
+
+⚙️ Technical Linux Competencies
+
+1. Advanced File Manipulation & Search (CLI)
+
+Proficiency in native Linux utilities for rapid triage of large file volumes and logs:
+
+Recursive Search & Filtering: Combined use of find and grep (flags -r, -n, -i, -C, -E) to locate specific patterns across complex directory trees and compressed archives (unzip -l).
+
+File & Binary Inspection: Identifying file types regardless of extension (file), paginated reading (less), content viewing (cat), byte-by-byte comparison (cmp -l), and block-level manipulation (dd).
+
+Terminal Encoding/Decoding: Fast conversion and decoding of data streams using base64 -d, xxd, and hexdump -C.
+
+2. File System & Device Management
+
+Mounting & Loop Devices: Manual creation and mounting of disk images in read-only mode (mount -o loop,ro,offset=..., losetup) for safe forensic analysis without altering data integrity.
+
+Partition Diagnostics: Calculating sector offsets and identifying file system structures (ext2/3/4, FAT, NTFS).
+
+3. Shell Scripting & .bashrc Automation
+
+Development of custom routines to boost productivity and monitor terminal tasks:
+
+Notification Automation: Creation of custom functions and aliases in ~/.bashrc integrating visual desktop notifications (notify-send) and audio alerts (paplay / ffmpeg) upon completion of long-running commands.
+
+Process & Subshell Management: Running background tasks (&), job control, and suppressing subshell output noise.
+
+Desktop Environment Autostart: Configuring .desktop files in ~/.config/autostart/ for automatic startup of services and session scripts in XFCE.
+
+4. Package Administration & Conflict Resolution (Arch/BlackArch)
+
+Package Management with pacman & AUR (yay): System installation, full upgrades (pacman -Syu), and building community packages from the Arch User Repository.
+
+Dependency Troubleshooting: Diagnosing and resolving shared library conflicts (e.g., conflicts between libjpeg and libjpeg-turbo when running tools like steghide).
+
+Java Environment Management (JVM): Configuring multiple OpenJDK versions (/usr/lib/jvm/) and resolving module incompatibilities (such as JavaFX and Security Manager) to run legacy forensic tools like Autopsy.
+
+5. Hardware & System Diagnostics
+
+Inventory & Monitoring: Checking CPU architecture and hardware specifications (lscpu, /proc/cpuinfo, inxi -C, lshw) and monitoring real-time system resources and processes (htop, watch).
+
+Audio Server & GUI: Diagnosing audio subsystems (ALSA vs. PipeWire/PulseAudio) and managing/resetting desktop environments (XFCE, GNOME, KDE).
