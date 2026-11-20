@@ -1,0 +1,36 @@
+=PAu
+=wiu
+win.com
+This program requires Microsoft Windows.
+$You are already running Microsoft Windows.
+$Unable to start Microsoft Windows.
+FERG
+LEVEL5
+VBRUN300
+LEVEL5
+Level 6 can be found at: 
+Horray!
+R5I5
+Invalid username and/or password!
+ERROR!
+j7KI
+LEVEL5
+LEVEL5
+LEVEL5.FRM
+0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.,:;-*+=~|&!_$#@()[]{}<\/>4
+http://www.try2hack.nl/levels/level6-ksghvb.xhtml
+ txtUsername=AlmostAHacker 
+ txtPassword=ZqrE01A2d 
+Try2Hack level 5
+Microsoft Sans Serif
+BM6.
+Login
+	Password:
+	Username:
+MAIN
+edtUsername
+edtPassword
+Picture1
+lblPassword
+cmdLogin
+lblUsername
