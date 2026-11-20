@@ -1,0 +1,12 @@
+import base64
+
+data = base64.b64decode("VVBVVVxeSU9GA1NECmxTB1hfa0UJRANGa1ZRVQoLAQVRTg==")
+known = b"academy{"
+
+# Extrai a chave repetida do cabeçalho
+key = [data[i] ^ known[i] for i in range(len(known))]
+
+# Aplica a chave ao restante da mensagem
+flag = "".join(chr(data[i] ^ key[i % len(key)]) for i in range(len(data)))
+
+print("[+] Resultado final:", flag)

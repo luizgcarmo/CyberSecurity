@@ -1,0 +1,191 @@
+Esse comando combina a extração de caracteres legíveis de um arquivo binário (`strings`) com a filtragem por padrões de texto específicos (`grep`).
+
+O trecho `grep -E -i "academy\{|ctf\{|BTK\{|HTB\{"` funciona dividindo as instruções entre a busca e suas opções de execução:
+
+### 1. As Opções (Flags)
+
+* **`-E` (Extended Regular Expressions):** Habilita expressões regulares estendidas. Isso permite o uso do operador `|` (ou) e de meta-caracteres de busca sem a necessidade de escapá-los com barras invertidas adicionais.
+* **`-i` (Ignore Case):** Torna a busca insensível a maiúsculas e minúsculas. Assim, ele vai capturar variações como `CTF{`, `ctf{`, `Ctf{`, etc.
+
+---
+
+### 2. O Padrão de Busca (Expressão Regular)
+
+A string `"academy\{|ctf\{|BTK\{|HTB\{"` define as regras de correspondência:
+
+* **O operador `|` (OU):** Funciona como uma alternativa lógica. O comando buscará por `academy\{` **OU** `ctf\{` **OU** `BTK\{` **OU** `HTB\{`.
+* **A barra invertida `\{` (Escape):** Nas expressões regulares, a chave `{` é um caractere especial usado para definir quantificadores (ex: `a{3}`). Para que o `grep` entenda que você está procurando o caractere de chave literal `{` (o símbolo impresso no texto), é necessário colocar a barra invertida `\` antes dele.
+
+---
+
+### Exemplo de Comportamento
+
+Se a saída do `strings` contiver as seguintes linhas:
+
+```text
+[+] User log: admin logged in
+[+] Flag encontrada: HTB{5tr1ngs_f2n_f1l3_4n4lys1s}
+[-] Error: key not found
+[+] Output: ctf{m3m0ry_dump_s3cr3t}
+
+```
+
+O `grep` analisará linha por linha e exibirá no terminal **apenas** as linhas que contêm uma das sequências especificadas:
+
+```text
+[+] Flag encontrada: HTB{5tr1ngs_f2n_f1l3_4n4lys1s}
+[+] Output: ctf{m3m0ry_dump_s3cr3t}
+
+```
+
+========================================================================================================
+
+usando o comando basico do terminal sha256sum pode gerar uma chave sha256 dos arquivos do diretorio, caso o CTF tenha que validar alguma chave sha256 para achar a flag podemos usar o grep vinculado ao comando sha256sum exemplo:
+
+--- sha256sum <directory> | grep "<sha256-key>"
+
+mas caso não tenha uma chave primaria ja mostrado no problema mais precisa validar a hash para ter certeza que é valida usar:
+
+--- sha256sum -c <file_name> | grep -v "OK"
+
+
+para problemas com varia pastas e precisa procurar o hash especifico:
+
+
+--- find . -type -f -exec sha256sum {} + | grep "<hash>"
+
+
+# Guia de Busca de Flags em Desafios CTF
+
+Este guia resume comandos e estratégias para localizar flags em estruturas de arquivos e diretórios com subpastas quando não se tem o hash ou a localização exata.
+
+---
+
+## 1. Busca Direta pelo Padrão da Flag (Conteúdo)
+
+Se a flag estiver em texto plano e seguir um padrão conhecido (ex: `picoCTF{...}`, `flag{...}`), use o `grep` para buscar recursivamente:
+
+```bash
+grep -rnI "picoCTF{" .
+
+```
+
+* `-r`: Busca recursiva em todas as subpastas.
+* `-n`: Exibe o número da linha.
+* `-I`: Ignora arquivos binários.
+* `-i`: (Opcional) Ignora a diferença entre maiúsculas e minúsculas (`grep -rnIi "flag{" .`).
+
+Se a ferramenta `ripgrep` estiver instalada, a busca em diretórios grandes é mais rápida:
+
+```bash
+rg "picoCTF{"
+
+```
+
+---
+
+## 2. Busca por Nomes de Arquivos
+
+Para localizar arquivos suspeitos em subpastas com base no nome:
+
+```bash
+find . -type f \( -iname "*flag*" -o -iname "*secret*" -o -iname "*.txt" \)
+
+```
+
+---
+
+## 3. Mapeamento de Hashes SHA-256
+
+Para gerar a lista de hashes de todos os arquivos em subpastas e salvar em um arquivo para análise posterior:
+
+```bash
+find . -type f -exec sha256sum {} + > lista_hashes.txt
+
+```
+
+---
+
+## 4. Cenários Especiais com Scripts
+
+### Cenário A: A Flag vem da Execução de um Script Fornecido no Desafio
+
+Em alguns desafios, o autor deixa um script (ex: `.sh` ou `.py`) projetado para verificar os arquivos, calcular o hash e exibir a flag.
+
+1. **Identificar a intenção:** Se o script calcula o SHA-256 dos arquivos da pasta e compara com uma lista interna, a flag pode ser gerada dinamicamente ou revelada após a validação do hash correto.
+2. **Cuidados na execução:**
+* Inspecione o conteúdo do script antes de executá-lo (`cat script.sh` ou `less script.py`) para entender o que ele faz.
+* Dê permissão de execução, se necessário:
+```bash
+chmod +x script.sh
+./script.sh
+
+```
+
+
+* Caso o script dependa da passagem de um arquivo específico como argumento:
+```bash
+./script.py caminho/do/arquivo
+
+```
+
+
+
+
+
+---
+
+### Cenário B: Criar um Script para Mapear Hashes e Localizar a Flag
+
+Se não houver script pronto e você precisar iterar sobre centenas de arquivos para calcular o SHA-256 de cada um e identificar a flag (ou comparar com um valor alvo), você pode automatizar o processo com Python ou Shell Script.
+
+#### Exemplo em Python (`verificar_hashes.py`):
+
+```python
+import hashlib
+import os
+
+# Defina o hash alvo ou o padrão de flag que procura, se houver
+HASH_ALVO = "coloque_o_hash_procurado_aqui"  # Se aplicável
+
+diretorio_base = "."
+
+for root, dirs, files in os.walk(diretorio_base):
+    for file in files:
+        caminho_completo = os.path.join(root, file)
+
+        # Ignorar o próprio script de verificação
+        if file == "verificar_hashes.py":
+            continue
+
+        try:
+            with open(caminho_completo, "rb") as f:
+                conteudo = f.read()
+                hash_calculado = hashlib.sha256(conteudo).hexdigest()
+
+                # Caso 1: Comparar com um hash específico
+                if hash_calculado == HASH_ALVO:
+                    print(
+                        f"[+] Hash correspondente encontrado em: {caminho_completo}"
+                    )
+
+                # Caso 2: Verificar se a flag está no próprio conteúdo lido
+                if b"picoCTF{" in conteudo:
+                    print(f"[+] Flag encontrada no arquivo: {caminho_completo}")
+
+        except Exception as e:
+            continue
+
+```
+
+Para executar o script criado:
+
+```bash
+python3 verificar_hashes.py
+
+```
+
+```
+
+```
+

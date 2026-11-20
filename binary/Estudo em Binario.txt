@@ -1,0 +1,81 @@
+depender do tamanho do buffer e tamanho da string pode ser injetado comandos em terminal estourando o buffer de entrada de dados se o buffer for menor como uma leitura de nome
+
+exemplo:
+
+    char c[10];
+    char buffer[10];
+    
+nesse caso se tiver um fgets para uma string de 10 caracteres e o "c" o buffer de uma variavel do cmd ou terminal é possivel estourar o buffer da string e sobrescrever o comando de "c"
+
+
+# Sumário de Estudos: Engenharia Reversa, Exploração de Binários e Aplicações em Red Team
+
+Este documento sintetiza toda a nossa jornada de estudos e resolução do desafio de binário (Pwn/Buffer Overflow), unindo desde a análise inicial da estrutura do binário até a execução bem-sucedida do exploit, além de contextualizar como essas técnicas são aplicadas em operações reais de segurança ofensiva.
+
+---
+
+## 1. Visão Geral da Jornada de Estudo
+
+### A. Análise Estática e Dinâmica do Binário
+* **Identificação de Alvos:** O binário iniciava imprimindo na tela endereços dinâmicos cruciais da memória (como o endereço de `username` em `0x200a62a0` e da variável de controle/shell em `0x200a62d0`).
+* **Mapeamento da Pilha (Stack):** Através da diferença entre esses endereços (`0x30` em hexadecimal), calculamos o *offset* exato de **48 bytes** entre o buffer de entrada do usuário e o espaço de controle.
+* **Compreensão do Código C Vulnerável:** A inspeção do código revelou o uso de funções sem controle rígido de tamanho (`strcpy`, ausência de *bounds checking*) e a alocação sequencial de variáveis na stack (onde a variável de comando/shell ficava logo adjacente ao buffer de entrada).
+
+### B. Superação de Desafios Técnicos e Restrições
+* **Falhas no Terminal Interativo:** Tentativas manuais via `netcat` falharam inicialmente devido à injeção acidental de quebras de linha (`\n`) pelo teclado e ao comportamento de leitura do terminal.
+* **Limitações de Espaço e Caracteres:** Descobrimos que comandos longos (como `cat flag.txt`) estouravam o tamanho do buffer dedicado, gerando falhas de segmentação (`SIGSEGV`). A solução exigiu payloads compactos e livres de espaços — como o uso de curingas (`cat*`) ou a chamada direta ao interpretador de comandos (`/bin/sh`).
+* **Automação via Python (Pwntools):** Substituímos a interação manual por um script estruturado em Python utilizando a biblioteca `pwntools`, permitindo enviar os 48 bytes exatos de preenchimento seguidos do comando malicioso de forma cirúrgica e sem ruídos de terminal.
+
+### C. O Confeccionamento do Exploit Final
+* Ao enviar o payload definitivo preenchendo os 48 bytes de alinhamento e injetando `/bin/sh` no espaço da variável de controle, o programa executou `system("/bin/sh")`, resultando na abertura bem-sucedida de um shell interativo remoto que permitiu a captura da flag.
+
+---
+
+## 2. Aplicação Prática em Red Team (Operações Reais)
+
+Os conceitos explorados neste laboratório espelham diretamente metodologias utilizadas por equipes de segurança ofensiva (Red Teams) e analistas de vulnerabilidades no mundo real:
+
+* **Auditoria de Código e Análise de Binários (Code Review):**
+  Profissionais de segurança examinam códigos legados em C/C++ em busca de funções perigosas (como `strcpy`, `sprintf`, `gets`) que não validam o tamanho dos dados de entrada, identificando brechas de corrupção de memória antes que agentes maliciosos as encontrem.
+* **Manipulação de Ponteiros e Variáveis de Estado:**
+  Assim como sobrescrevemos a variável de comando na stack do laboratório, operadores reais buscam corromper ponteiros de função (`function pointers`) ou variáveis de controle de fluxo em daemons de rede, sistemas embarcados (IoT) ou aplicações corporativas para redirecionar a execução do software.
+* **Técnicas *Living off the Land* (LotL) e Restrições de Payload:**
+  Em cenários corporativos protegidos por soluções avançadas de monitoramento (EDR/WAF), restrições estritas de tamanho de buffer e filtros de caracteres especiais forçam operadores a utilizarem comandos minimalistas, curingas do shell (`*`) ou codificações (como Base64) para executar utilitários nativos do sistema operacional sem disparar alarmes.
+* **Pós-Exploração e Acesso Inicial (Shelling):**
+  A injeção bem-sucedida de um shell (`/bin/sh`) reflete a fase crítica de ganho de acesso inicial ou escalação de privilégios. Em uma operação real, esse mesmo princípio é utilizado para consolidar o acesso ao host comprometido, permitir a navegação interna na rede e cumprir os objetivos do engajamento autorizado.
+  
+  ##########
+  
+  **PATH Hijacking:::::
+
+Verificar o strings do binario: 
+	strings ./<arquivo>
+	
+procurar no strings caminhos utilizados no arquivo binario como:
+/bin/bash -c /root/flag.txt
+
+depois precisamos modificar o algo do caminho que foi achado no exemplo:
+	echo -e '#!/bin/bash\ncat /root/flag.txt' > md5sum 
+esse codigo injeta o comando cat /root/flag.txt no binario do md5sum trocando todo o codigo que tem no binario para o cat 
+
+depois temos que modificar a execução do md5sum para podermos executar novamente o md5sum
+
+Adicionar o novo path do md5 a biblioteca do binario que vai ser executado:
+
+	export PATH=$(pwd):$PATH
+	
+depois é só rodar o binario que na hora que a funçao dentro do binario chamar o md5sum ele vai utilizar o que foi adicionado anteriormente.
+
+Outros exemplos:
+
+O ataque de PATH Hijacking não se restringe a utilitários de hash. Qualquer programa com privilégios elevados (como um binário SUID root) que execute comandos ou utilitários do sistema utilizando caminhos relativos pode ser explorado para execução arbitrária de código ou leitura de arquivos protegidos.
+
+Exemplos de comandos comuns que frequentemente aparecem em binários privilegiados e podem ser sequestrados via PATH incluem:
+
+    Interpretadores e Linguagens (python, perl, ruby, lua): Se um binário privilegiado executa algo como system("python script.py") sem o caminho absoluto (/usr/bin/python), criar um script malicioso chamado python no diretório controlado e injetá-lo no PATH faz com que o interpretador rode com privilégios de root.
+
+    Ferramentas de Log e Notificação (logger, mail, sendmail): Utilitários de sistema costumam registrar eventos ou enviar alertas chamando esses comandos. Se o binário os chama por nome puro (ex: system("logger 'erro'");), um binário falso substitui a chamada e executa comandos como cat /root/flag.txt.
+
+    Utilitários de Texto e Processamento (awk, sed, grep, sort, tar): Programas de backup, relatórios ou auditoria frequentemente invocam essas ferramentas para manipular dados. Se o programa roda com privilégios e chama sort ou tar de forma relativa, o sequestro do executável permite ler ou sobrescrever arquivos restritos.
+
+    Ferramentas de Rede (ping, netstat, curl, wget): Utilitários de diagnóstico executados por ferramentas de rede privilegiadas. Substituir a ferramenta legítima por um script personalizado permite executar o payload desejado herdando os privilégios elevados do processo pai.

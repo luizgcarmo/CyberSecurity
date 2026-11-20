@@ -1,0 +1,27 @@
+gdb ./<executavel>
+
+break <função>
+
+break *<endereço>   ----- ** Endereço de memoria **
+
+info symbol <endereço>
+
+info breakpoint
+
+delete 1 -- ** deleta breakpoint **
+
+run / r vuln -- ** roda o programa **
+
+info registers -- ** ver os registradores ** (tambem serve para funções)
+
+x/10gx $rsp  -- ** inspeciona memoria (x) ** -- ** (/10g) formato hexadecimal ** -- ** ($rsp) inicio da pilha **
+
+x/s <endereço> -- ** (s) informação em string **
+
+rbreak . / rbeta   -- ** funções no binario sem bibliotecas externas **
+
+delete
+
+info proc mapping -- ** mapeia os ponteiros alocados na memoria ** 
+
+ 

@@ -1,0 +1,15 @@
+python3 -c '
+import os
+for root, dirs, files in os.walk("/"):
+    try:
+        for file in files:
+            path = os.path.join(root, file)
+            if os.geteuid() == 0 or os.access(path, os.X_OK):
+                # Checa se tem SUID bit ativado
+                if os.stat(path).st_mode & 0o4000:
+                    print("SUID:", path)
+    except PermissionError:
+        pass
+'
+
+sript para terminais restritos de 'cd' '/' ou sem permissão.

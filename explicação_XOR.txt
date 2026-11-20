@@ -1,0 +1,122 @@
+Aqui está a explicação minuciosa de cada linha e da lógica por trás do script que resolveu o problema do XOR automaticamente.
+
+---
+
+### O Código Completo
+
+```python
+import base64
+
+data = base64.b64decode("VVBVVVxeSU9GA1NECmxTB1hfa0UJRANGa1ZRVQoLAQVRTg==")
+known = b"academy{"
+
+# Extrai a chave repetida do cabeçalho
+key = [data[i] ^ known[i] for i in range(len(known))]
+
+# Aplica a chave ao restante da mensagem
+flag = "".join(chr(data[i] ^ key[i % len(key)]) for i in range(len(data)))
+
+print("[+] Resultado final:", flag)
+
+```
+
+---
+
+### A Lógica Matemática por Trás (Propriedades do XOR)
+
+A operação lógica **XOR (Exclusive OR / Ou Exclusivo)**, representada pelo símbolo $\oplus$ em matemática e por `^` em linguagens de programação, possui uma propriedade fundamental utilizada em criptografia:
+
+$$\text{Texto Claro} \oplus \text{Chave} = \text{Texto Cifrado}$$
+
+Devido à simetria do XOR, **se invertermos a equação**, o resultado também é verdadeiro:
+
+1. **Inversão 1:** $\text{Texto Cifrado} \oplus \text{Chave} = \text{Texto Claro}$
+2. **Inversão 2:** $\text{Texto Cifrado} \oplus \text{Texto Claro} = \text{Chave}$
+
+Como nós sabemos que o padrão do CTF exige que o texto claro comece com `academy{`, nós temos tanto o **Texto Cifrado** quanto o **Texto Claro** para os 8 primeiros bytes. Logo, aplicamos a **Inversão 2** para descobrir a chave exata sem precisar adivinhar.
+
+---
+
+### Explicação Linha por Linha
+
+#### 1. Decodificação da Base64
+
+```python
+data = base64.b64decode("VVBVVVxeSU9GA1NECmxTB1hfa0UJRANGa1ZRVQoLAQVRTg==")
+
+```
+
+* **O que faz:** Converte a string codificada em Base64 para uma sequência de bytes brutos na memória.
+* **Lógica:** A Base64 não é criptografia, é apenas uma representação em texto ASCII de dados binários. Ao decodificar, obtemos a lista de bytes cifrados originais ($C_0, C_1, C_2, \dots$).
+
+---
+
+#### 2. Definindo o Texto Conhecido (*Known Plaintext*)
+
+```python
+known = b"academy{"
+
+```
+
+* **O que faz:** Cria uma sequência de bytes com o prefixo conhecido da flag (`a, c, a, d, e, m, y, {`).
+* **Lógica:** O prefixo `b"..."` transforma a string em um array de bytes no formato ASCII: `[97, 99, 97, 100, 101, 109, 121, 123]`.
+
+---
+
+#### 3. Derivação da Chave (*Key Deduction*)
+
+```python
+key = [data[i] ^ known[i] for i in range(len(known))]
+
+```
+
+* **O que faz:** Percorre os primeiros 8 bytes da mensagem e faz o XOR individual entre o byte cifrado (`data[i]`) e o byte legível esperado (`known[i]`).
+* **Lógica detalhada:**
+* Para $i = 0$: `data[0]` $\oplus$ `'a'` $\rightarrow$ revela o byte 0 da chave.
+* Para $i = 1$: `data[1]` $\oplus$ `'c'` $\rightarrow$ revela o byte 1 da chave.
+* E assim por diante para os 8 caracteres de `academy{`.
+
+
+* Isso gera uma lista `key` contendo a sequência exata de bytes da chave que foi utilizada pelo criador do desafio.
+
+---
+
+#### 4. Decifragem do Texto Completo com Módulo (`%`)
+
+```python
+flag = "".join(chr(data[i] ^ key[i % len(key)]) for i in range(len(data)))
+
+```
+
+Esta linha realiza três operações importantes:
+
+1. **Operador Módulo (`i % len(key)`):**
+* Como a mensagem tem mais de 8 bytes (é mais longa do que a chave derivada), a chave precisa **se repetir em ciclo** ao longo de toda a mensagem (padrão de Cifra de Vigenère).
+* O operador `%` garante que se a chave tiver 8 bytes:
+* Para o byte 0 da mensagem, usa o byte `0 % 8 = 0` da chave.
+* Para o byte 7 da mensagem, usa o byte `7 % 8 = 7` da chave.
+* Para o byte 8 da mensagem, o índice "dá a volta": `8 % 8 = 0` da chave.
+
+
+
+
+2. **Operação XOR (`data[i] ^ key[...]`):**
+* Aplica o byte correto da chave sobre cada byte da mensagem cifrada para obter o código ASCII decimal do caractere original.
+
+
+3. **Conversão e Junção (`chr(...)` e `"`.join(...)`):**
+* `chr(...)`: Converte o valor numérico resultante do XOR de volta para o caractere visível (ex: `97` vira `'a'`).
+* `"".join(...)`: Junta todos os caracteres decifrados em uma única string textual.
+
+
+
+---
+
+#### 5. Saída no Terminal
+
+```python
+print("[+] Resultado final:", flag)
+
+```
+
+* **O que faz:** Exibe a string final já montada e decifrada sem ruídos ou erros de buffer.

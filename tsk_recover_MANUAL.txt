@@ -1,0 +1,62 @@
+Sintaxe Geral do tsk_recover
+Bash
+
+tsk_recover [opções] <imagem_de_disco> <diretorio_de_destino>
+
+Opções Fundamentais de Segurança e Filtragem
+
+    -a (Allocated Only): Extrai apenas ficheiros e diretórios ativos/alocados (evita despejar ficheiros apagados/corrompidos se quiser uma cópia limpa do sistema de ficheiros).
+
+    -e (Every File): Extrai todos os ficheiros (incluindo ficheiros apagados que ainda possam ser recuperados dos blocos não alocados).
+
+    -o <sector_offset>: Especifica o setor onde a partição começa (caso a imagem seja um disco completo com tabela de partições).
+
+    -d: Mostra informações detalhadas de depuração durante a extração.
+
+Passo a Passo Prático
+1. Identificar o Offset (Se necessário)
+
+Se a sua imagem for de um disco completo, descubra o setor inicial com o mmls:
+Bash
+
+mmls imagem.img
+
+Anote o número do setor inicial (Start Sector) da partição desejada (ex.: 2048).
+2. Extrair Todo o Conteúdo da Partição
+
+Para extrair a árvore de diretórios completa da imagem para uma pasta local segura chamada extraido:
+Bash
+
+# Caso seja uma imagem direta de partição (sem offset):
+tsk_recover -a timeline-1-partition4.img ./extraido
+
+# Caso seja um disco completo com offset de setor (ex: 2048):
+tsk_recover -a -o 2048 imagem.img ./extraido
+
+Como Extrair Apenas um Diretório Específico?
+
+O tsk_recover não possui uma opção nativa de filtro por caminho diretamente na linha de comando (ele recupera toda a estrutura da partição a partir da raiz). Para focar num diretório específico (por exemplo, /etc ou /home/user) mantendo a abordagem forense sem montar o disco, existem duas estratégias:
+Estratégia A: Extração Completa + Isolamento Local (A mais prática)
+
+Como a maior parte das imagens de CTF/Forense são pequenas, o método mais rápido é extrair tudo para um diretório temporário local e depois isolar o diretório desejado:
+Bash
+
+# 1. Extrai a estrutura completa da partição
+tsk_recover -a timeline-1-partition4.img ./revisao_forense
+
+# 2. Navega até ao diretório específico que pretende analisar
+cd ./revisao_forense/etc/
+
+Estratégia B: Uso do icat em Loop com o fls (Para extração cirúrgica de uma pasta)
+
+Se o disco for gigante e quiser extrair apenas os ficheiros contidos dentro de um único diretório (ex: /etc), identifique os Inodes dessa pasta com o fls e extraia-os individualmente:
+
+    Listar o conteúdo do diretório alvo e salvar os Inodes:
+    Bash
+
+    fls -r timeline-1-partition4.img /etc
+
+    Extrair um ficheiro individual de dentro dessa pasta usando o Inode:
+    Bash
+
+    icat timeline-1-partition4.img <INODE> > /pasta_local/ficheiro_extraido

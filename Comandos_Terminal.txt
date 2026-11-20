@@ -1,0 +1,37 @@
+tesseract <name_file>.unk <result> -l eng+por
+
+exiftool <name_file>
+
+hexedit <name_file>
+
+mv <name_file>.unk <name_file>.txt
+
+base64 -d <name_file>
+
+cat <name_file> | base64 -d > <name_file>.txt
+
+hashid "<hash>"
+
+nth -t "<hash>"
+
+echo "<hash>" | xxd -r -p ( Hexadecimal )
+
+steghide extract -sf <name_file> -p "<password>"
+
+stegseek <name_file> -p "<password>"
+
+mmls <name_disk>
+
+fls <name_disk>
+
+icat <name_disk>
+
+strings -a disko-1.dd | grep -E -i "academy\{|ctf\{|BTK\{|HTB\{"
+
+fls -r -m "/" imagem.img > bodyfile.txt
+
+mactime -b bodyfile.txt -z UTC -d > timeline.csv
+
+grep "<text>" <file>
+
+tsk_recover [opções] <imagem_de_disco> <diretorio_de_destino>
